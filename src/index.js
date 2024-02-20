@@ -14,40 +14,28 @@ const recipeSchema = new mongoose.Schema({
   category: String,
 });
 const Recipe = mongoose.model("recipe", recipeSchema);
-const recipe = new Recipe({
-  name: "French toast",
-  ingredients: ["bread", "eggs", "milk", "cinnamon"],
-  category: "sweet",
-});
-await recipe.save();
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-const recipes = [
-  { id: 1, name: "Bread" },
-  { id: 2, name: "Cake" },
-  { id: 3, name: "Soup" },
-];
-
-app.get("/", (req, res) => {
-  res.send("Hello world");
+app.get("/recipes", async (req, res) => {
+  const result = await Recipe.find();
+  res.send(result);
 });
-app.get("/recipes", (req, res) => {
-  res.send(recipes);
-});
-app.get("/recipes/:id", (req, res) => {
-  const recipe = recipes.find((r) => r.id === parseInt(req.params.id));
+app.get("/recipes/:id", async (req, res) => {
+  const recipe = await Recipe.findById(req.params.id);
   if (!recipe)
     return res.status(404).send("The recipe with the given id was not found");
   res.send(recipe);
 });
 
-app.post("/recipes", (req, res) => {
+app.post("/recipes", async (req, res) => {
   const schema = Joi.object({
     name: Joi.string().required(),
+    ingredients: Joi.array().required(),
+    category: Joi.string().required(),
   });
   const result = schema.validate(req.body);
   if (result.error) {
@@ -55,11 +43,12 @@ app.post("/recipes", (req, res) => {
     return;
   }
 
-  const recipe = {
-    id: recipes.length + 1,
+  let recipe = new Recipe({
     name: req.body.name,
-  };
-  recipes.push(recipe);
+    ingredients: req.body.ingredients,
+    category: req.body.category,
+  });
+  recipe = await recipe.save();
   res.send(recipe);
 });
 
