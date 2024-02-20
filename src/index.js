@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import cors from "cors";
 import express from "express";
+import Joi from "joi";
 
 const app = express();
 
@@ -27,13 +28,22 @@ app.get("/recipes/:id", (req, res) => {
 });
 
 app.post("/recipes", (req, res) => {
-    const recipe = {
-        id: recipes.length + 1,
-        name: req.body.name
-    };
-    recipes.push(recipe);
-    res.send(recipe);
-})
+  const schema = Joi.object({
+    name: Joi.string().required(),
+  });
+  const result = schema.validate(req.body);
+  if (result.error) {
+    res.status(400).send(result.error.details[0].message);
+    return;
+  }
+
+  const recipe = {
+    id: recipes.length + 1,
+    name: req.body.name,
+  };
+  recipes.push(recipe);
+  res.send(recipe);
+});
 
 app.listen(3000, () => {
   console.log("Listening on port 3000...");
