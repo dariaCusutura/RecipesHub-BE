@@ -13,6 +13,14 @@ const recipeSchema = new mongoose.Schema({
   ingredients: [String],
   category: String,
 });
+const Recipe = mongoose.model("recipe", recipeSchema);
+const recipe = new Recipe({
+  name: "French toast",
+  ingredients: ["bread", "eggs", "milk", "cinnamon"],
+  category: "sweet",
+});
+await recipe.save();
+
 const app = express();
 
 app.use(cors());
