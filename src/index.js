@@ -3,6 +3,16 @@ import cors from "cors";
 import express from "express";
 import Joi from "joi";
 
+mongoose
+  .connect("mongodb://localhost/Recipe-hub")
+  .then(() => console.log("connected to mongoose succesfully"))
+  .catch((error) => console.log("could not connect to mongoose"));
+
+const recipeSchema = new mongoose.Schema({
+  name: String,
+  ingredients: [String],
+  category: String,
+});
 const app = express();
 
 app.use(cors());
