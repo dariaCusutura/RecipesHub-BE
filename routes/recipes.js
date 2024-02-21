@@ -1,37 +1,22 @@
-import mongoose from "mongoose";
-import cors from "cors";
 import express from "express";
+import Recipe from "../models/recipes.js";
 import Joi from "joi";
+const router = express.Router();
 
-mongoose
-  .connect("mongodb://localhost/Recipe-hub")
-  .then(() => console.log("connected to mongoose succesfully"))
-  .catch((error) => console.log("could not connect to mongoose"));
-
-const recipeSchema = new mongoose.Schema({
-  name: String,
-  ingredients: [String],
-  category: String,
-});
-const Recipe = mongoose.model("recipe", recipeSchema);
-
-const app = express();
-
-app.use(cors());
-app.use(express.json());
-
-app.get("/recipes", async (req, res) => {
+// Get all recipes
+router.get("/recipes", async (req, res) => {
   const result = await Recipe.find();
   res.send(result);
 });
-app.get("/recipes/:id", async (req, res) => {
+// Get one recipe by id
+router.get("/recipes/:id", async (req, res) => {
   const recipe = await Recipe.findById(req.params.id);
   if (!recipe)
     return res.status(404).send("The recipe with the given id was not found");
   res.send(recipe);
 });
-
-app.post("/recipes", async (req, res) => {
+// Post a new recipe
+router.post("/recipes", async (req, res) => {
   const schema = Joi.object({
     name: Joi.string().required(),
     ingredients: Joi.array().required(),
@@ -52,6 +37,4 @@ app.post("/recipes", async (req, res) => {
   res.send(recipe);
 });
 
-app.listen(3000, () => {
-  console.log("Listening on port 3000...");
-});
+export default router;
