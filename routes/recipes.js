@@ -4,19 +4,33 @@ import Joi from "joi";
 const router = express.Router();
 
 // Get all recipes
-router.get("/recipes", async (req, res) => {
+router.get("/", async (req, res) => {
   const result = await Recipe.find();
   res.send(result);
 });
-// Get one recipe by id
-router.get("/recipes/:id", async (req, res) => {
-  const recipe = await Recipe.findById(req.params.id);
-  if (!recipe)
-    return res.status(404).send("The recipe with the given id was not found");
-  res.send(recipe);
+// Get recipes by category
+router.get("/:category", async (req, res) => {
+  const recipes = await Recipe.find({ category: req.params.category }).catch(
+    () => {
+      return res
+        .status(404)
+        .send("The recipe with the given category was not found");
+    }
+  );
+  res.send(recipes);
 });
+
+//Get favourite recipes
+// router.get("/?favourite", async (req, res) => {
+//   const recipes = await Recipe.find({ favourite: true }).catch(() => {
+//     return res.status(404).send("There are no favourite recipes");
+//   });
+//   recipes.length !== 0
+//     ? res.send(recipes)
+//     : res.status(404).send("There are no favourite recipes");
+// });
 // Post a new recipe
-router.post("/recipes", async (req, res) => {
+router.post("/", async (req, res) => {
   const schema = Joi.object({
     name: Joi.string().required(),
     ingredients: Joi.array().required(),
