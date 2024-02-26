@@ -1,29 +1,23 @@
-import User from "../models/users.js";
-import Joi from "joi";
+import { User, validateUser } from "../models/users.js";
 import express from "express";
+import _ from "lodash";
+import bcrypt from "bcrypt";
 
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-  const schema = Joi.object({
-    name: Joi.string().required(),
-    hashedPassword: Joi.string().required(),
-    favorites: Joi.array().required(),
-  });
-
-  const result = schema.validate(req.body);
+  const result = validateUser(req.body);
   if (result.error) {
     res.status(400).send(result.error.details[0].message);
     return;
   }
 
-  let user = new User({
-    name: req.body.name,
-    session: req.body.session,
-    favorites: req.body.favorites,
-  });
-  //   user = await user.save();
-  //   res.send(user);
+  let user = new User(_.pick(req.body, ["password", "favorites", "email"]));
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(user.password, salt);
+
+  await user.save();
+  res.send(user);
 });
 
 export default router;
