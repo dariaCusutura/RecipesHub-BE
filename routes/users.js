@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 
 const router = express.Router();
 
+// to create a new user
 router.post("/", async (req, res) => {
   const result = validateUser(req.body);
   if (result.error) {
