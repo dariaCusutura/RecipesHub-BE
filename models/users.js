@@ -13,7 +13,6 @@ export function validateUser(user) {
   const schema = Joi.object({
     email: Joi.string().required().email(),
     password: Joi.string().required(),
-    favorites: Joi.array().required(),
   });
   return schema.validate(user);
 }
