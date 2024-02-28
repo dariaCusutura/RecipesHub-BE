@@ -27,7 +27,7 @@ export const login = async (req, res, next) => {
     withCredentials: true,
     httpOnly: false,
     maxAge: maxAge * 1000,
-  });
+  }).send("Logged in successfully");
 };
 
 //Creating a new user
@@ -53,7 +53,7 @@ export const register = async (req, res) => {
         httpOnly: false,
         maxAge: maxAge * 1000,
       })
-      .send("registered successfully");
+      .send("Registered successfully");
   } catch {
     res.status(500).send();
   }

@@ -11,7 +11,10 @@ export const User = mongoose.model("user", userSchema);
 
 export function validateUser(user) {
   const schema = Joi.object({
-    email: Joi.string().required().email(),
+    email: Joi.string().required().email().messages({
+      "string.empty": "Email is required.",
+      "string.email": "Email must be valid",
+    }),
     password: Joi.string().required(),
   });
   return schema.validate(user);
