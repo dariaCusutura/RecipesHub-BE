@@ -4,8 +4,11 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import "dotenv/config.js";
 
+const maxAge = 3 * 24 * 60 * 60;
 const createToken = (user) => {
-  return jwt.sign({_id: user._id}, process.env.ACCESS_TOKEN_SECRET);
+  return jwt.sign({ _id: user._id }, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: maxAge,
+  });
 };
 
 // Logging in
@@ -20,7 +23,11 @@ export const login = async (req, res, next) => {
   if (!validPassword) return res.status(400).send("Invalid email or password");
 
   const accessToken = createToken(user);
-  res.json({accessToken: accessToken});
+  res.cookie("jwt", accessToken, {
+    withCredentials: true,
+    httpOnly: false,
+    maxAge: maxAge * 1000,
+  });
 };
 
 //Creating a new user
@@ -38,9 +45,15 @@ export const register = async (req, res) => {
     user.password = await bcrypt.hash(user.password, 10);
 
     await user.save();
-    
+
     const accessToken = createToken(user);
-    res.header('x-auth-token', accessToken).send(user);
+    res
+      .cookie("jwt", accessToken, {
+        withCredentials: true,
+        httpOnly: false,
+        maxAge: maxAge * 1000,
+      })
+      .send("registered successfully");
   } catch {
     res.status(500).send();
   }
