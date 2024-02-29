@@ -12,7 +12,7 @@ const createToken = (user) => {
 };
 
 // Logging in
-export const login = async (req, res, next) => {
+export const login = async (req, res) => {
   const { error } = validateUser(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 

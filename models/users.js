@@ -13,9 +13,11 @@ export function validateUser(user) {
   const schema = Joi.object({
     email: Joi.string().required().email().messages({
       "string.empty": "Email is required.",
-      "string.email": "Email must be valid",
+      "string.email": "Email must be valid.",
     }),
-    password: Joi.string().required(),
+    password: Joi.string().required().messages({
+      "string.empty": "Password is required."
+    }),
   });
   return schema.validate(user);
 }
