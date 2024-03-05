@@ -43,6 +43,21 @@ export const favoriteRecipes = async (req, res) => {
   );
 };
 
+//Get favorites array
+export const favoritesArray = async (req, res) => {
+  jwt.verify(
+    req.cookies.jwt,
+    process.env.ACCESS_TOKEN_SECRET,
+    async (error, decodedToken) => {
+      if (error) return res.status(404).send(error.message);
+      const user = await User.findById(decodedToken._id).catch((err) => {
+        return res.send(err.message);
+      });
+      res.send(user.favorites);
+    }
+  );
+};
+
 //Post a new recipe
 export const newRecipe = async (req, res) => {
   const schema = Joi.object({

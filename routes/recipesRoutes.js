@@ -4,6 +4,7 @@ import {
   allRecipes,
   byCategory,
   favoriteRecipes,
+  favoritesArray,
   newRecipe,
 } from "../controllers/recipesControllers.js";
 
@@ -13,6 +14,8 @@ router.get("/", allRecipes);
 router.get("/:category", byCategory);
 //Get favorite recipes
 router.get("/favorites/list", favoriteRecipes);
+//Get favorites array
+router.get("/favorites/array", favoritesArray);
 // Post a new recipe
 router.post("/", newRecipe);
 
