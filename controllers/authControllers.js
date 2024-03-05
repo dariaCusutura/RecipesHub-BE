@@ -23,11 +23,13 @@ export const login = async (req, res) => {
   if (!validPassword) return res.status(400).send("Invalid email or password");
 
   const accessToken = createToken(user);
-  res.cookie("jwt", accessToken, {
-    withCredentials: true,
-    httpOnly: false,
-    maxAge: maxAge * 1000,
-  }).send("Logged in successfully");
+  res
+    .cookie("jwt", accessToken, {
+      withCredentials: true,
+      httpOnly: false,
+      maxAge: maxAge * 1000,
+    })
+    .send("Logged in successfully");
 };
 
 //Creating a new user
@@ -57,4 +59,24 @@ export const register = async (req, res) => {
   } catch {
     res.status(500).send();
   }
+};
+
+export const addFavorite = async (req, res) => {
+  jwt.verify(
+    req.cookies.jwt,
+    process.env.ACCESS_TOKEN_SECRET,
+    async (error, decodedToken) => {
+      await User.findByIdAndUpdate(
+        decodedToken._id,
+        !req.body.liked
+          ? { $push: { favorites: req.body.recipe } }
+          : { $pull: { favorites: req.body.recipe } },
+        { new: true }
+      ).then(() => {
+        !req.body.liked
+          ? res.send("liked successfully")
+          : res.send("disliked successfully");
+      });
+    }
+  );
 };

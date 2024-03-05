@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
 import Joi from "joi";
+import { ObjectId } from "mongodb";
 
 const userSchema = new mongoose.Schema({
   email: { type: String, required: [true, "Email is required"], unique: true },
   password: { type: String, required: [true, "Password is required"] },
-  favorites: Array,
+  favorites: [{ type: ObjectId, ref: "recipe" }],
 });
 
 export const User = mongoose.model("user", userSchema);
@@ -16,7 +17,7 @@ export function validateUser(user) {
       "string.email": "Email must be valid.",
     }),
     password: Joi.string().required().messages({
-      "string.empty": "Password is required."
+      "string.empty": "Password is required.",
     }),
   });
   return schema.validate(user);

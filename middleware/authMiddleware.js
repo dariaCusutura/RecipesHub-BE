@@ -10,18 +10,18 @@ export const authenticateToken = (req, res, next) => {
       process.env.ACCESS_TOKEN_SECRET,
       async (error, decodedToken) => {
         if (error) {
-          res.json({ status: false });
+          res.send({ status: false });
           next();
         } else {
           const user = User.findById(decodedToken._id);
-          if (user) res.json({ status: true });
-          else res.json({ status: false });
+          if (user) res.send({ status: true });
+          else res.send({ status: false });
           next();
         }
       }
     );
   } else {
-    res.json({ status: false });
+    res.send({ status: false });
     next();
   }
 };
