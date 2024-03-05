@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import cors from "cors";
 import express from "express";
-import recipes from "./routes/recipes.js";
+import recipes from "./routes/recipesRoutes.js";
 import auth from "./routes/authRoutes.js";
 import cookieParser from "cookie-parser";
 

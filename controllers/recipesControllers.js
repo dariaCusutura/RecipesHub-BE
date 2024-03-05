@@ -1,18 +1,17 @@
-import express from "express";
 import Recipe from "../models/recipes.js";
-import Joi from "joi";
-const router = express.Router();
 import jwt from "jsonwebtoken";
 import "dotenv/config.js";
 import { User } from "../models/users.js";
+import Joi from "joi";
 
-// Get all recipes
-router.get("/", async (req, res) => {
+//Get all recipes
+export const allRecipes = async (req, res) => {
   const result = await Recipe.find();
   res.send(result);
-});
-// Get recipes by category
-router.get("/:category", async (req, res) => {
+};
+
+//Get recipe by category
+export const byCategory = async (req, res) => {
   const recipes = await Recipe.find({ category: req.params.category }).catch(
     () => {
       return res
@@ -21,8 +20,10 @@ router.get("/:category", async (req, res) => {
     }
   );
   res.send(recipes);
-});
-router.get("/favorites/list", async (req, res) => {
+};
+
+//Get favorite recipes
+export const favoriteRecipes = async (req, res) => {
   jwt.verify(
     req.cookies.jwt,
     process.env.ACCESS_TOKEN_SECRET,
@@ -40,9 +41,10 @@ router.get("/favorites/list", async (req, res) => {
       res.send(recipes);
     }
   );
-});
-// Post a new recipe
-router.post("/", async (req, res) => {
+};
+
+//Post a new recipe
+export const newRecipe = async (req, res) => {
   const schema = Joi.object({
     name: Joi.string().required(),
     ingredients: Joi.array().required(),
@@ -61,6 +63,4 @@ router.post("/", async (req, res) => {
   });
   recipe = await recipe.save();
   res.send(recipe);
-});
-
-export default router;
+};
