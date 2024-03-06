@@ -11,7 +11,7 @@ import {
 // Get all recipes
 router.get("/", allRecipes);
 // Get recipes by category
-router.get("/:category", byCategory);
+router.get("/category", byCategory);
 //Get favorite recipes
 router.get("/favorites/list", favoriteRecipes);
 //Get favorites array

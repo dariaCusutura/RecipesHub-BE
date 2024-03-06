@@ -12,13 +12,15 @@ export const allRecipes = async (req, res) => {
 
 //Get recipe by category
 export const byCategory = async (req, res) => {
-  const recipes = await Recipe.find({ category: req.params.category }).catch(
-    () => {
-      return res
-        .status(404)
-        .send("The recipe with the given category was not found");
+  const recipes = await Recipe.find({ category: req.query.category }).catch(
+    (err) => {
+      return res.status(404).json(err.message);
     }
   );
+  if (!recipes.length)
+    return res
+      .status(404)
+      .json("The recipe with the given category was not found");
   res.send(recipes);
 };
 
