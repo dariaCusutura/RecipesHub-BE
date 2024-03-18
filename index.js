@@ -3,6 +3,7 @@ import cors from "cors";
 import express from "express";
 import recipes from "./routes/recipesRoutes.js";
 import auth from "./routes/authRoutes.js";
+import user from "./routes/userRoutes.js"
 import cookieParser from "cookie-parser";
 
 mongoose
@@ -24,6 +25,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use("/recipes", recipes);
 app.use("/", auth);
+app.use("/", user);
 
 app.listen(3000, () => {
   console.log("Listening on port 3000...");

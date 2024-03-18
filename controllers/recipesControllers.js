@@ -6,21 +6,10 @@ import Joi from "joi";
 
 //Get all recipes
 export const allRecipes = async (req, res) => {
-  const result = await Recipe.find();
-  res.send(result);
-};
-
-//Get recipe by category
-export const byCategory = async (req, res) => {
-  const recipes = await Recipe.find({ category: req.query.category }).catch(
-    (err) => {
-      return res.status(404).json(err.message);
-    }
-  );
-  if (!recipes.length)
-    return res
-      .status(404)
-      .json("The recipe with the given category was not found");
+  const recipes = await Recipe.find({ ...req.query }).catch((err) => {
+    return res.status(500).json(err.message);
+  });
+  if (!recipes.length) return res.status(404).json("No recipe found");
   res.send(recipes);
 };
 
@@ -36,10 +25,10 @@ export const favoriteRecipes = async (req, res) => {
       });
       if (user.favorites.length === 0)
         return res.status(404).send("Your favorites list is empty.");
+
       const recipes = await Recipe.find({
         _id: user.favorites,
       });
-
       res.send(recipes);
     }
   );
