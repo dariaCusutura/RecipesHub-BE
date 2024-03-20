@@ -52,14 +52,19 @@ export const favoritesArray = async (req, res) => {
 //Post a new recipe
 export const newRecipe = async (req, res) => {
   const schema = Joi.object({
-    name: Joi.string().required(),
-    ingredients: Joi.array().required(),
-    category: Joi.string().required(),
-    author: Joi.string().required()
+    name: Joi.string().required().messages({
+      "string.empty": "Name is required.",
+    }),
+    ingredients: Joi.array().required().messages({"array.base": "Add some ingredients to the recipe."}),
+    category: Joi.string().required().messages({
+      "string.empty": "Select a category.",
+    }),
+    author: Joi.string().required(),
+    image: Joi.string().required(),
   });
-  const result = schema.validate(req.body);
-  if (result.error) {
-    res.status(400).send(result.error.details[0].message);
+  const { error } = schema.validate(req.body);
+  if (error) {
+    res.status(400).send(error.details[0].message);
     return;
   }
 
@@ -67,7 +72,8 @@ export const newRecipe = async (req, res) => {
     name: req.body.name,
     ingredients: req.body.ingredients,
     category: req.body.category,
-    author: req.body.author
+    author: req.body.author,
+    image: req.body.image,
   });
   recipe = await recipe.save();
   res.send(recipe);
