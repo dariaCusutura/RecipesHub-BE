@@ -55,6 +55,7 @@ export const newRecipe = async (req, res) => {
     name: Joi.string().required(),
     ingredients: Joi.array().required(),
     category: Joi.string().required(),
+    author: Joi.string().required()
   });
   const result = schema.validate(req.body);
   if (result.error) {
@@ -66,6 +67,7 @@ export const newRecipe = async (req, res) => {
     name: req.body.name,
     ingredients: req.body.ingredients,
     category: req.body.category,
+    author: req.body.author
   });
   recipe = await recipe.save();
   res.send(recipe);
