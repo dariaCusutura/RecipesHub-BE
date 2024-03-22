@@ -48,6 +48,13 @@ export const register = async (req, res) => {
       res.status(400).send(error.details[0].message);
       return;
     }
+    //verify if name is unique
+    let userName = await User.findOne({ name: req.body.name });
+    if (userName)
+      return res
+        .status(400)
+        .send("This name is already used. Try another name.");
+    //verify if email is already used
     let user = await User.findOne({ email: req.body.email });
     if (user) return res.status(400).send("User already registered");
 

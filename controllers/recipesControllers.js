@@ -55,7 +55,9 @@ export const newRecipe = async (req, res) => {
     name: Joi.string().required().messages({
       "string.empty": "Name is required.",
     }),
-    ingredients: Joi.array().required().messages({"array.base": "Add some ingredients to the recipe."}),
+    ingredients: Joi.array()
+      .required()
+      .messages({ "array.base": "Add some ingredients to the recipe." }),
     category: Joi.string().required().messages({
       "string.empty": "Select a category.",
     }),
@@ -77,4 +79,11 @@ export const newRecipe = async (req, res) => {
   });
   recipe = await recipe.save();
   res.send(recipe);
+};
+
+//Delete a recipe
+export const deleteRecipe = async (req, res) => {
+  const recipe = await Recipe.findByIdAndDelete(req.params.id)
+    .catch((err) => res.status(404).send(err))
+    .then(() => res.send("Recipe deleted"));
 };
