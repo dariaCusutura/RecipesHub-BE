@@ -5,7 +5,8 @@ import {
   favoriteRecipes,
   favoritesArray,
   newRecipe,
-  deleteRecipe
+  deleteRecipe,
+  editRecipe,
 } from "../controllers/recipesControllers.js";
 
 // Get all recipes
@@ -18,5 +19,7 @@ router.get("/favorites/array", favoritesArray);
 router.post("/", newRecipe);
 //Delete recipe
 router.delete("/:id", deleteRecipe);
+//Edit recipe
+router.put("/:id", editRecipe);
 
 export default router;

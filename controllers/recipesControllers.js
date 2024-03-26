@@ -51,20 +51,7 @@ export const favoritesArray = async (req, res) => {
 
 //Post a new recipe
 export const newRecipe = async (req, res) => {
-  const schema = Joi.object({
-    name: Joi.string().required().messages({
-      "string.empty": "Name is required.",
-    }),
-    ingredients: Joi.array()
-      .required()
-      .messages({ "array.base": "Add some ingredients to the recipe." }),
-    category: Joi.string().required().messages({
-      "string.empty": "Select a category.",
-    }),
-    author: Joi.string().required(),
-    image: Joi.string().required(),
-  });
-  const { error } = schema.validate(req.body);
+  const { error } = recipeSchema.validate(req.body);
   if (error) {
     res.status(400).send(error.details[0].message);
     return;
@@ -83,7 +70,30 @@ export const newRecipe = async (req, res) => {
 
 //Delete a recipe
 export const deleteRecipe = async (req, res) => {
-  const recipe = await Recipe.findByIdAndDelete(req.params.id)
+  await Recipe.findByIdAndDelete(req.params.id)
     .catch((err) => res.status(404).send(err))
     .then(() => res.send("Recipe deleted"));
 };
+
+//Edit recipe
+export const editRecipe = async (req, res) => {
+  const { error } = recipeSchema.validate(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+  await Recipe.findByIdAndUpdate(req.params.id, { ...req.body })
+    .catch((err) => res.status(404).send(err))
+    .then(() => res.send("Recipe updated"));
+};
+
+const recipeSchema = Joi.object({
+  name: Joi.string().required().messages({
+    "string.empty": "Name is required.",
+  }),
+  ingredients: Joi.array()
+    .required()
+    .messages({ "array.base": "Add some ingredients to the recipe." }),
+  category: Joi.string().required().messages({
+    "string.empty": "Select a category.",
+  }),
+  author: Joi.string().required(),
+  image: Joi.string().required(),
+});
