@@ -40,7 +40,7 @@ export const login = async (req, res) => {
     .send("Logged in successfully");
 };
 
-//Creating a new user
+//Registering
 export const register = async (req, res) => {
   try {
     const { error } = validateRegisterUser(req.body);
@@ -54,6 +54,7 @@ export const register = async (req, res) => {
       return res
         .status(400)
         .send("This name is already used. Try another name.");
+        
     //verify if email is already used
     let user = await User.findOne({ email: req.body.email });
     if (user) return res.status(400).send("User already registered");
@@ -76,24 +77,4 @@ export const register = async (req, res) => {
   } catch {
     res.status(500).send();
   }
-};
-
-export const addFavorite = async (req, res) => {
-  jwt.verify(
-    req.cookies.jwt,
-    process.env.ACCESS_TOKEN_SECRET,
-    async (error, decodedToken) => {
-      await User.findByIdAndUpdate(
-        decodedToken._id,
-        !req.body.liked
-          ? { $push: { favorites: req.body.recipe } }
-          : { $pull: { favorites: req.body.recipe } },
-        { new: true }
-      ).then(() => {
-        !req.body.liked
-          ? res.send("liked successfully")
-          : res.send("disliked successfully");
-      });
-    }
-  );
 };

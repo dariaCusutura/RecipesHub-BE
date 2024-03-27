@@ -7,6 +7,7 @@ import {
   newRecipe,
   deleteRecipe,
   editRecipe,
+  addFavorite,
 } from "../controllers/recipesControllers.js";
 
 // Get all recipes
@@ -21,5 +22,7 @@ router.post("/", newRecipe);
 router.delete("/:id", deleteRecipe);
 //Edit recipe
 router.put("/:id", editRecipe);
+//Like or dislike recipe
+router.put("/liked/:id", addFavorite);
 
 export default router;

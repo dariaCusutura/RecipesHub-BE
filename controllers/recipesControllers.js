@@ -84,6 +84,27 @@ export const editRecipe = async (req, res) => {
     .then(() => res.send("Recipe updated"));
 };
 
+//Like or dislike recipe
+export const addFavorite = async (req, res) => {
+  jwt.verify(
+    req.cookies.jwt,
+    process.env.ACCESS_TOKEN_SECRET,
+    async (error, decodedToken) => {
+      await User.findByIdAndUpdate(
+        decodedToken._id,
+        !req.body.liked
+          ? { $push: { favorites: req.params.id } }
+          : { $pull: { favorites: req.params.id } },
+        { new: true }
+      ).then(() => {
+        !req.body.liked
+          ? res.send("liked successfully")
+          : res.send("disliked successfully");
+      });
+    }
+  );
+};
+
 const recipeSchema = Joi.object({
   name: Joi.string().required().messages({
     "string.empty": "Name is required.",
