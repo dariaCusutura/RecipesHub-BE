@@ -11,7 +11,7 @@ import "dotenv/config.js";
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (user) => {
   return jwt.sign(
-    { _id: user._id, email: user.email },
+    { _id: user._id, email: user.email, name: user.name },
     process.env.ACCESS_TOKEN_SECRET,
     {
       expiresIn: maxAge,
