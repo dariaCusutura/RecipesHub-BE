@@ -8,9 +8,9 @@ import { response } from "express";
 //Get all recipes
 export const allRecipes = async (req, res) => {
   const recipes = await Recipe.find({ ...req.query }).catch((err) => {
-    return res.status(500).json(err.message);
+    return res.status(500).send(err.message);
   });
-  if (!recipes.length) return res.status(404).json("No recipe found");
+  if (!recipes.length) return res.status(404).send("No recipes found");
   res.send(recipes);
 };
 
