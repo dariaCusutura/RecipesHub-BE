@@ -71,43 +71,27 @@ export const newRecipe = async (req, res) => {
 
 //Delete a recipe
 export const deleteRecipe = async (req, res) => {
-  jwt.verify(
-    req.cookies.jwt,
-    process.env.ACCESS_TOKEN_SECRET,
-    async (error, decodedToken) => {
-      if (error) return res.status(404).send(error.message);
-      const recipe = await Recipe.findById(req.params.id).catch((err) =>
-        response.status(404).send(err)
-      );
-      //allow only the author to delete the recipe
-      if (decodedToken.name === recipe.author)
-        await Recipe.findByIdAndDelete(req.params.id)
-          .catch((err) => res.status(404).send(err))
-          .then(() => res.send("Recipe deleted"));
-      else res.status(403).send("You aren't allowed to delete other's recipes");
-    }
-  );
+  const recipe = await Recipe.findById(req.params.id).catch((err) => {
+    return response.status(400).send(err);
+  });
+  //allow only the author to delete the recipe
+  if (req.user.name === recipe.author)
+    await Recipe.findByIdAndDelete(req.params.id)
+      .catch((err) => res.status(404).send(err))
+      .then(() => res.send("Recipe deleted"));
+  else return res.status(401).send("Access denied.");
 };
 
 //Edit recipe
 export const editRecipe = async (req, res) => {
-  jwt.verify(
-    req.cookies.jwt,
-    process.env.ACCESS_TOKEN_SECRET,
-    async (error, decodedToken) => {
-      if (error) return res.status(404).send(error.message);
-
-      //allow only the author to edit the recipe
-      if (decodedToken.name === req.body.author) {
-        const { error } = recipeSchema.validate(req.body);
-        if (error) return res.status(400).send(error.details[0].message);
-        await Recipe.findByIdAndUpdate(req.params.id, { ...req.body })
-          .catch((err) => res.status(404).send(err))
-          .then(() => res.send("Recipe updated"));
-      } else
-        res.status(403).send("You are not allowed to edit other's recipes");
-    }
-  );
+  //allow only the author to edit the recipe
+  if (req.user.name === req.body.author) {
+    const { error } = recipeSchema.validate(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
+    await Recipe.findByIdAndUpdate(req.params.id, { ...req.body })
+      .catch((err) => res.status(404).send(err))
+      .then(() => res.send("Recipe updated"));
+  } else return res.status(401).send("Access denied.");
 };
 
 //Like or dislike recipe

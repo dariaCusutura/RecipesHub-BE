@@ -9,6 +9,7 @@ import {
   editRecipe,
   addFavorite,
 } from "../controllers/recipesControllers.js";
+import { authorisateToken } from "../middleware/authMiddleware.js";
 
 // Get all recipes
 router.get("/", allRecipes);
@@ -17,11 +18,11 @@ router.get("/favorites/list", favoriteRecipes);
 //Get favorites array
 router.get("/favorites/array", favoritesArray);
 // Post a new recipe
-router.post("/", newRecipe);
+router.post("/", authorisateToken, newRecipe);
 //Delete recipe
-router.delete("/:id", deleteRecipe);
+router.delete("/:id", authorisateToken, deleteRecipe);
 //Edit recipe
-router.put("/:id", editRecipe);
+router.put("/:id", authorisateToken, editRecipe);
 //Like or dislike recipe
 router.put("/liked/:id", addFavorite);
 
