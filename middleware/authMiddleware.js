@@ -4,25 +4,24 @@ import { User } from "../models/users.js";
 
 export const authenticateToken = (req, res, next) => {
   const token = req.cookies.jwt;
-  if (token) {
+  if (!token) {
+    return res.send({ status: false });
+  } else {
     jwt.verify(
       token,
       process.env.ACCESS_TOKEN_SECRET,
       async (error, decodedToken) => {
         if (error) {
-          res.send({ status: false });
-          next();
+          return res.send({ status: false });
         } else {
           const user = User.findById(decodedToken._id);
-          if (user) res.send({ status: true });
-          else res.send({ status: false });
-          next();
+          if (user) {
+            res.send({ status: true });
+            next();
+          } else return res.send({ status: false });
         }
       }
     );
-  } else {
-    res.send({ status: false });
-    next();
   }
 };
 

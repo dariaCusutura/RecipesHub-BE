@@ -7,7 +7,7 @@ export const userData = async (req, res) => {
     req.cookies.jwt,
     process.env.ACCESS_TOKEN_SECRET,
     async (error, decodedToken) => {
-      if (error) res.status(404).send("User not found");
+      if (error) return res.status(404).send("User not found");
       const user = await User.findById(decodedToken._id).catch((err) =>
         res.status(404).send("User not found")
       );
