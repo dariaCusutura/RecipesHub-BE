@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: [true, "Password is required"] },
   favorites: [{ type: ObjectId, ref: "recipe" }],
   name: { type: String, required: [true, "Name is required"] },
+  isAdmin: {type: Boolean}
 });
 
 export const User = mongoose.model("user", userSchema);

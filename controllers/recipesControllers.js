@@ -74,8 +74,8 @@ export const deleteRecipe = async (req, res) => {
   const recipe = await Recipe.findById(req.params.id).catch((err) => {
     return response.status(400).send(err);
   });
-  //allow only the author to delete the recipe
-  if (req.user.name === recipe.author)
+  //allow only the author/admin to delete the recipe
+  if (req.user.name === recipe.author || req.user.isAdmin === true)
     await Recipe.findByIdAndDelete(req.params.id)
       .catch((err) => res.status(404).send(err))
       .then(() => res.send("Recipe deleted"));
@@ -84,8 +84,8 @@ export const deleteRecipe = async (req, res) => {
 
 //Edit recipe
 export const editRecipe = async (req, res) => {
-  //allow only the author to edit the recipe
-  if (req.user.name === req.body.author) {
+  //allow only the author/admin to edit the recipe
+  if (req.user.name === req.body.author || req.user.isAdmin === true) {
     const { error } = recipeSchema.validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     await Recipe.findByIdAndUpdate(req.params.id, { ...req.body })
