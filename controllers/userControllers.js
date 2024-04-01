@@ -18,3 +18,16 @@ export const userData = async (req, res) => {
     isAdmin: req.user.isAdmin,
   });
 };
+
+//delete user
+export const deleteUser = async ( req, res) => {
+  const user = await User.findById(req.params.id).catch((err) => {
+    return response.status(400).send(err);
+  });
+  //allow only the author/admin to delete the user
+  if (req.user.name === user.name || req.user.isAdmin === true)
+    await User.findByIdAndDelete(req.params.id)
+      .catch((err) => res.status(404).send(err))
+      .then(() => res.send("User deleted"));
+  else return res.status(401).send("Access denied.");
+}

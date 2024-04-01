@@ -25,7 +25,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use("/recipes", recipes);
 app.use("/", auth);
-app.use("/", user);
+app.use("/users", user);
 
 app.listen(3000, () => {
   console.log("Listening on port 3000...");
