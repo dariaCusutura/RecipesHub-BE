@@ -11,7 +11,12 @@ import "dotenv/config.js";
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (user) => {
   return jwt.sign(
-    { _id: user._id, email: user.email, name: user.name, isAdmin: user.isAdmin },
+    {
+      _id: user._id,
+      email: user.email,
+      name: user.name,
+      isAdmin: user.isAdmin,
+    },
     process.env.ACCESS_TOKEN_SECRET,
     {
       expiresIn: maxAge,
@@ -37,7 +42,7 @@ export const login = async (req, res) => {
       httpOnly: false,
       maxAge: maxAge * 1000,
     })
-    .send({isAdmin: user.isAdmin});
+    .send({ isAdmin: user.isAdmin });
 };
 
 //Registering
@@ -54,7 +59,7 @@ export const register = async (req, res) => {
       return res
         .status(400)
         .send("This name is already used. Try another name.");
-        
+
     //verify if email is already used
     let user = await User.findOne({ email: req.body.email });
     if (user) return res.status(400).send("User already registered");

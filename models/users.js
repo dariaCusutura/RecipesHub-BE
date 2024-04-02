@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: [true, "Password is required"] },
   favorites: [{ type: ObjectId, ref: "recipe" }],
   name: { type: String, required: [true, "Name is required"] },
-  isAdmin: {type: Boolean}
+  isAdmin: { type: Boolean },
 });
 
 export const User = mongoose.model("user", userSchema);
@@ -20,6 +20,18 @@ export function validateAuthUser(user) {
     }),
     password: Joi.string().required().messages({
       "string.empty": "Password is required.",
+    }),
+  });
+  return schema.validate(user);
+}
+
+export function validatePassword(user) {
+  const schema = Joi.object({
+    currentPassword: Joi.string().required().messages({
+      "string.empty": "Current password is required.",
+    }),
+    newPassword: Joi.string().required().messages({
+      "string.empty": "New password is required.",
     }),
   });
   return schema.validate(user);
