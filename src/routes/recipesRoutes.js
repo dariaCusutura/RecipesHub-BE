@@ -12,7 +12,7 @@ import {
 import { authorisateToken } from "../middleware/authMiddleware.js";
 
 // Get all recipes
-router.get("/", authorisateToken, allRecipes);
+router.get("/",  allRecipes);
 //Get favorite recipes
 router.get("/favorites/list", favoriteRecipes);
 //Get favorites array

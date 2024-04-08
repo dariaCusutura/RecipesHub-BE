@@ -5,9 +5,16 @@ import { User } from "../models/users.js";
 import Joi from "joi";
 import { response } from "express";
 
+const PAGE_SIZE = 5;
+
 //Get all recipes
 export const allRecipes = async (req, res) => {
-  const recipes = await Recipe.find({ ...req.query }).catch((err) => {
+  const { page = 0, ...query } = req.query;
+  const skip = parseInt(page) * PAGE_SIZE
+  const recipes = await Recipe.find(query, null, {
+    skip,
+    limit: PAGE_SIZE,
+  }).catch((err) => {
     return res.status(500).send(err.message);
   });
   if (!recipes.length) return res.status(404).send("No recipes found");
