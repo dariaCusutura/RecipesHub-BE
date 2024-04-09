@@ -9,8 +9,8 @@ const PAGE_SIZE = 5;
 
 //Get all recipes
 export const allRecipes = async (req, res) => {
-  const { page = 0, ...query } = req.query;
-  const skip = parseInt(page) * PAGE_SIZE
+  const { page, ...query } = req.query;
+  const skip = parseInt(page) * PAGE_SIZE;
   const recipes = await Recipe.find(query, null, {
     skip,
     limit: PAGE_SIZE,
@@ -18,7 +18,9 @@ export const allRecipes = async (req, res) => {
     return res.status(500).send(err.message);
   });
   if (!recipes.length) return res.status(404).send("No recipes found");
-  res.send(recipes);
+  //for pagination restrictions
+  const totalRecipesCount = await Recipe.countDocuments(query);
+  res.send({ recipes, totalRecipesCount });
 };
 
 //Get favorite recipes array
