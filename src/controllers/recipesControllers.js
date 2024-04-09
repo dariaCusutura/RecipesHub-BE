@@ -9,8 +9,12 @@ const PAGE_SIZE = 5;
 
 //Get all recipes
 export const allRecipes = async (req, res) => {
-  const { page, ...query } = req.query;
+  const { page = 0, ingredients, ...otherQuery } = req.query;
   const skip = parseInt(page) * PAGE_SIZE;
+  const query = { ...otherQuery };
+  if (ingredients) {
+    query.ingredients = { $all: ingredients };
+  }
   const recipes = await Recipe.find(query, null, {
     skip,
     limit: PAGE_SIZE,
@@ -33,13 +37,25 @@ export const favoriteRecipes = async (req, res) => {
       const user = await User.findById(decodedToken._id).catch((err) => {
         return res.send(err.message);
       });
+
       if (user.favorites.length === 0)
         return res.status(404).send("Your favorites list is empty.");
-
-      const recipes = await Recipe.find({
+      const { page = 0 } = req.query;
+      const skip = parseInt(page) * PAGE_SIZE;
+      const recipes = await Recipe.find(
+        {
+          _id: user.favorites,
+        },
+        null,
+        {
+          skip,
+          limit: PAGE_SIZE,
+        }
+      );
+      const totalRecipesCount = await Recipe.countDocuments({
         _id: user.favorites,
       });
-      res.send(recipes);
+      res.send({ recipes, totalRecipesCount });
     }
   );
 };
