@@ -18,6 +18,7 @@ export const allRecipes = async (req, res) => {
   const recipes = await Recipe.find(query, null, {
     skip,
     limit: PAGE_SIZE,
+    sort: { date: -1 },
   }).catch((err) => {
     return res.status(500).send(err.message);
   });
@@ -60,7 +61,8 @@ export const favoriteRecipes = async (req, res) => {
   );
 };
 
-//Get favorite recipes ids array
+//Get favorite recipes ids array (to display full heart button for liked recipes
+// and empty heart for the rest)
 export const favoritesArray = async (req, res) => {
   jwt.verify(
     req.cookies.jwt,
@@ -89,6 +91,7 @@ export const newRecipe = async (req, res) => {
     category: req.body.category,
     author: req.body.author,
     image: req.body.image,
+    date: req.body.date,
   });
   recipe = await recipe.save();
   res.send(recipe);
@@ -152,4 +155,5 @@ const recipeSchema = Joi.object({
   }),
   author: Joi.string().required(),
   image: Joi.string().required(),
+  date: Joi.date().required(),
 });
