@@ -128,19 +128,35 @@ export const addFavorite = async (req, res) => {
     req.cookies.jwt,
     process.env.ACCESS_TOKEN_SECRET,
     async (error, decodedToken) => {
+      if (error) return res.status(403).send(error.message);
       await User.findByIdAndUpdate(
         decodedToken._id,
         !req.body.liked
           ? { $push: { favorites: req.params.id } }
           : { $pull: { favorites: req.params.id } },
         { new: true }
-      ).then(() => {
-        !req.body.liked
-          ? res.send("liked successfully")
-          : res.send("disliked successfully");
-      });
+      )
+        .then(() => {
+          !req.body.liked
+            ? res.send("liked successfully")
+            : res.send("disliked successfully");
+        })
+        .catch((err) => res.status(404).send(err));
     }
   );
+};
+
+//Search a recipe
+export const searchRecipe = async (req, res) => {
+  let searchTerm = req.query.search;
+  let recipes = searchTerm!== "" && await Recipe.find({
+    name: { $regex: searchTerm, $options: "i" },
+  }).catch((err) => {
+    res.status(404).send(err.message);
+  });
+  if (recipes?.length===0)
+    return res.status(404).send("No recipe matched your search");
+  res.status(200).send(recipes);
 };
 
 const recipeSchema = Joi.object({

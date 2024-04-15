@@ -8,6 +8,7 @@ import {
   deleteRecipe,
   editRecipe,
   addFavorite,
+  searchRecipe,
 } from "../controllers/recipesControllers.js";
 import { authorisateToken } from "../middleware/authMiddleware.js";
 
@@ -25,5 +26,7 @@ router.delete("/:id", authorisateToken, deleteRecipe);
 router.put("/:id", authorisateToken, editRecipe);
 //Like or dislike recipe
 router.put("/liked/:id", addFavorite);
+//Search recipe
+router.get("/search", searchRecipe);
 
 export default router;
