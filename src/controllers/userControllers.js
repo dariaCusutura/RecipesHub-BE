@@ -1,14 +1,21 @@
 import { User, validatePassword } from "../models/users.js";
 import bcrypt from "bcrypt";
 
+const PAGE_SIZE = 5;
+
 //get all users
 export const allUsers = async (req, res) => {
+  const { page = 0 } = req.query;
+  const skip = parseInt(page) * PAGE_SIZE;
   const users = await User.find()
     .select(["-password", "-favorites"])
+    .skip(skip)
+    .limit(PAGE_SIZE)
     .catch((err) => {
       return res.status(500).send(err.message);
     });
-  res.send(users);
+  const totalUsersCount = await User.countDocuments();
+  res.send({ users, totalUsersCount });
 };
 
 //get user data
@@ -52,4 +59,21 @@ export const updatePassword = async (req, res) => {
       .catch((err) => res.status(404).send(err))
       .then(() => res.send("Password updated"));
   }
+};
+
+//Search user
+export const searchUser = async (req, res) => {
+  let searchTerm = req.query.search;
+  let users =
+    searchTerm !== "" &&
+    (await User.find({
+      name: { $regex: searchTerm, $options: "i" },
+    })
+      .select(["-password", "-favorites"])
+      .catch((err) => {
+        res.status(404).send(err.message);
+      }));
+  if (users?.length === 0)
+    return res.status(404).send("No user matched your search");
+  res.status(200).send(users);
 };
