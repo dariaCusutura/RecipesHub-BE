@@ -153,9 +153,12 @@ export const searchRecipe = async (req, res) => {
     searchTerm !== "" &&
     (await Recipe.find({
       name: { $regex: searchTerm, $options: "i" },
-    }).catch((err) => {
-      res.status(404).send(err.message);
-    }));
+    })
+      .limit(5) // Limit the number of recipes returned to 5
+      .exec()
+      .catch((err) => {
+        res.status(404).send(err.message);
+      }));
   if (recipes?.length === 0)
     return res.status(404).send("No recipe matched your search");
   res.status(200).send(recipes);

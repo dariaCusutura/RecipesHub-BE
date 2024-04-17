@@ -70,6 +70,8 @@ export const searchUser = async (req, res) => {
       name: { $regex: searchTerm, $options: "i" },
     })
       .select(["-password", "-favorites"])
+      .limit(5) // Limit the number of recipes returned to 5
+      .exec()
       .catch((err) => {
         res.status(404).send(err.message);
       }));
