@@ -7,7 +7,7 @@ import user from "./routes/userRoutes.js";
 import cookieParser from "cookie-parser";
 
 mongoose
-  .connect("mongodb://localhost/Recipe-hub")
+  .connect(process.env.DATABASE_URL)
   .then(() => console.log("connected to mongoose succesfully"))
   .catch((error) => console.log("could not connect to mongoose"));
 
@@ -15,7 +15,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.FRONTEND_URL,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
